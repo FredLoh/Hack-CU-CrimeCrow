@@ -1,0 +1,20 @@
+{
+  "name": "NRFLBot",
+  "version": "0.0.1",
+  "description": "A bot to aggregate news",
+  "main": "bot.js",
+  "dependencies": {
+    "async": "^2.0.0-rc.1",
+    "botkit": "0.0.12",
+    "firebase": "^2.4.1",
+    "fs": "0.0.2",
+    "jfs": "^0.2.6",
+    "request": "^2.69.0",
+    "unit.js": "^2.0.0",
+    "wait.for": "^0.6.6"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/FredLoh/Hack-CU.git"
+  }
+}
