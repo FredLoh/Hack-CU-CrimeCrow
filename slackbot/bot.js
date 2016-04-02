@@ -85,7 +85,9 @@ function extractReport(id, text){
   var extractedBody = text.split('title: ')[0].replace('report:', '').trim()
   var extractedTitle = text.split('title: ')[1].split('location: ')[0].trim()
   var extractedLocation = text.split('location: ')[1].trim()
+  setTimeout(function() {
   getLocation(id, extractedLocation)
+}, 3000);
   return {
     id: id,
     title: extractedTitle,
@@ -104,6 +106,7 @@ function getLocation(key, location){
     request(query , function (error, response, body) {
       if (!error && response.statusCode == 200) {
         response = JSON.parse(body)
+        console.log(response)
         latlng = response.results[0].geometry.location
         report.location.lat = latlng.lat
         report.location.lng = latlng.lng
