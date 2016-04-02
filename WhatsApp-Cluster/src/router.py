@@ -10,7 +10,7 @@ from yowsup.layers.interface import YowInterfaceLayer, ProtocolEntityCallback
 from views import basic_views
 
 # Basic regex routes
-routes = [("^/ping", basic_views.ping),
+routes = [("^Status", basic_views.ping),
           ("^/e(cho)?\s(?P<echo_message>[^$]+)$", basic_views.echo)]
 
 
