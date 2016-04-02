@@ -2,8 +2,9 @@ import json
 import time
 import os
 import re
+from AnalyzeReportTweet import TweetReportAnalyzer
 from Twitter_Modules.FirebaseInteraction import FirebaseInteraction
-from tweepy import API
+from tweepy import API, TweepError
 from tweepy import OAuthHandler
 from tweepy import Stream
 from tweepy.streaming import StreamListener
@@ -25,6 +26,7 @@ class DataStream(StreamListener):
         self.reportaje_re = re.compile("|".join(['@reportajereal']))
         self.last_id = '1'
         self.firebase = FirebaseInteraction()
+        self.tweet_analyzer = TweetReportAnalyzer()
 
     def on_status(self, status):
         status.text = self.lowercase_tweets(status.text)
@@ -32,7 +34,12 @@ class DataStream(StreamListener):
             # DO STUFF WITH TWEET AT US
             print 'Tweet at us.'
             print status.text
-            self.firebase.post_new_report(tweet_id=status.id, tweet=status.text, title='wut')
+            if self.tweet_analyzer.analyze_tweet_for_keywords(tweet=status.text):
+                self.firebase.post_new_report(tweet_id=status.id, tweet=status.text, title='wut')
+                try:
+                    self.tweet(status.text)
+                except TweepError:
+                    print 'Duplicate'
         else:
             if self.analyze_tweet_for_keywords(status.text):
                 print status.text
@@ -47,9 +54,12 @@ class DataStream(StreamListener):
         print status_code
         return False
 
+    def tweet(self, tweet):
+        self.api.update_status(tweet)
+
     def start_stream(self):
         stream = Stream(self.auth, self)
-        stream.filter(track=['balacera', 'Violencia', '@ReportajeReal'], async=False)
+        stream.filter(track=['balacera', '@ReportajeReal'], async=False)
 
     @staticmethod
     def lowercase_tweets(tweet):
@@ -58,10 +68,14 @@ class DataStream(StreamListener):
     def analyze_tweet_for_keywords(self, tweet):
         if self.words_re.search(tweet):
             return True
+        else:
+            return False
 
     def analyze_if_tweet_is_at_us(self, tweet):
         if self.reportaje_re.search(tweet):
             return True
+        else:
+            return False
 
     def get_home_timeline(self):
         tweet = self.api.user_timeline(id='709091333969870851', count=1, include_rts=True)

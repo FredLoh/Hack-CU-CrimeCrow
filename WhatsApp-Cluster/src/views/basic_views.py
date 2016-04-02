@@ -9,4 +9,4 @@ def echo(message, match):
 def ping(message, match):
     words = ['hello', 'apple', 'something', 'yeah', 'nope', 'lalala']
     random_string = ' '.join(random.choice(words) for _ in range(5))
-    return TextMessageProtocolEntity(("Still alive." + random_string), to=message.getFrom())
+    return TextMessageProtocolEntity("Still alive.", to=message.getFrom())
