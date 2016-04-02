@@ -33,7 +33,7 @@ jspm_packages
 
 # Optional npm cache directory
 .npm
-
+last_id.txt
 # Optional REPL history
 .node_repgitl_history
 config.py
@@ -47,8 +47,8 @@ HackCU
 .idea/tasks.xml
 .idea/dictionaries
 .idea/vcs.xml
-.idea/jsLibraryMappings.xml
-
+.ideaco/jsLibraryMappings.xml
+config.txt
 # Sensitive or high-churn files:
 .idea/dataSources.ids
 .idea/dataSources.xml
@@ -56,7 +56,7 @@ HackCU
 .idea/sqlDataSources.xml
 .idea/dynamic.xml
 .idea/uiDesigner.xml
-
+*.pyc
 # Gradle:
 .idea/gradle.xml
 .idea/libraries

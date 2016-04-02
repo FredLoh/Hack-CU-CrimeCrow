@@ -1,4 +1,5 @@
 from yowsup.layers.protocol_messages.protocolentities import TextMessageProtocolEntity
+import random
 
 
 def echo(message, match):
@@ -6,4 +7,6 @@ def echo(message, match):
 
 
 def ping(message, match):
-    return TextMessageProtocolEntity("Pong!", to=message.getFrom())
+    words = ['hello', 'apple', 'something', 'yeah', 'nope', 'lalala']
+    random_string = ' '.join(random.choice(words) for _ in range(5))
+    return TextMessageProtocolEntity(("Still alive." + random_string), to=message.getFrom())

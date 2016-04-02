@@ -1,5 +1,7 @@
+import time
 import os
 import re
+import json
 from tweepy.streaming import StreamListener
 from tweepy import OAuthHandler
 from tweepy import Stream
@@ -19,6 +21,7 @@ class DataStream(StreamListener):
         self.list_of_words = ['en', 'entre', 'calle', 'interior',
                               'carretera', 'rumbo', 'evite']
         self.words_re = re.compile("|".join(self.list_of_words))
+        self.last_id = '1'
 
     def on_status(self, status):
         status.text = self.lowercase_tweets(status.text)
@@ -36,7 +39,7 @@ class DataStream(StreamListener):
 
     def start_stream(self):
         stream = Stream(self.auth, self)
-        stream.filter(track=['balacera'], async=False)
+        stream.filter(track=['balacera'], async=True)
 
     @staticmethod
     def lowercase_tweets(tweet):
@@ -46,5 +49,41 @@ class DataStream(StreamListener):
         if self.words_re.search(tweet):
             print tweet
 
+    def get_home_timeline(self):
+        tweet = self.api.user_timeline(screen_name='ReportajeReal', count=1, include_rts=True)
+        tweet_id = self.get_id_from_tweet_status_object(tweet)
+        if self.check_last_tweet():
+            print 'Found new tweet.'
+            self.store_last_tweet_id(str(tweet_id))
+            self.sleep_for(30)
+        else:
+            self.sleep_for(30)
+
+    @staticmethod
+    def get_id_from_tweet_status_object(status):
+        status = status[0]
+        json_string = json.dumps(status._json)
+        json_string = json.loads(json_string)
+        print json_string["text"]
+        return json_string["id"]
+
+    @staticmethod
+    def sleep_for(seconds):
+        print 'Sleeping'
+        time.sleep(seconds)
+
+    @staticmethod
+    def store_last_tweet_id(tweet_id):
+        with open("last_id.txt", "w+") as text_file:
+            text_file.write(tweet_id)
+
+    def check_last_tweet(self):
+        with open("last_id.txt", "r") as text_file:
+            for line in text_file:
+                if line == self.last_id:
+                    return False
+                else:
+                    return True
+
 t = DataStream()
-t.start_stream()
+t.get_home_timeline()
