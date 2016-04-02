@@ -1,0 +1,12 @@
+oauthlib==1.0.3
+protobuf==3.0.0b2.post2
+pycrypto==2.6.1
+python-axolotl==0.1.34
+python-axolotl-curve25519==0.1
+python-dateutil==2.5.2
+python-firebase==1.2
+requests==2.9.1
+requests-oauthlib==0.6.1
+six==1.10.0
+tweepy==3.5.0
+yowsup2==2.4.102
