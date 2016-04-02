@@ -46,6 +46,5 @@ class DataStream(StreamListener):
         if self.words_re.search(tweet):
             print tweet
 
-
 t = DataStream()
 t.start_stream()
