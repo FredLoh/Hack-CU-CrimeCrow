@@ -1,11 +1,12 @@
+import json
 import time
 import os
 import re
-import json
-from tweepy.streaming import StreamListener
+from Twitter_Modules.FirebaseInteraction import FirebaseInteraction
+from tweepy import API
 from tweepy import OAuthHandler
 from tweepy import Stream
-from tweepy import API
+from tweepy.streaming import StreamListener
 
 
 class DataStream(StreamListener):
@@ -21,16 +22,25 @@ class DataStream(StreamListener):
         self.list_of_words = ['en', 'entre', 'calle', 'interior',
                               'carretera', 'rumbo', 'evite']
         self.words_re = re.compile("|".join(self.list_of_words))
+        self.reportaje_re = re.compile("|".join(['@reportajereal']))
         self.last_id = '1'
+        self.firebase = FirebaseInteraction()
 
     def on_status(self, status):
         status.text = self.lowercase_tweets(status.text)
-        print status.text
-        self.analyze_tweet_for_keywords(status.text)
-        if status.coordinates:
-            print 'coords:', status.coordinates
-        if status.place:
-            print 'place:', status.place.full_name
+        if self.analyze_if_tweet_is_at_us(status.text):
+            # DO STUFF WITH TWEET AT US
+            print 'Tweet at us.'
+            print status.text
+            self.firebase.post_new_report(tweet_id=status.id, tweet=status.text, title='wut')
+        else:
+            if self.analyze_tweet_for_keywords(status.text):
+                print status.text
+                self.firebase.post_new_tweet(tweet_id=status.id, tweet=status.text, title='wut')
+                if status.coordinates:
+                    print 'coords:', status.coordinates
+                if status.place:
+                    print 'place:', status.place.full_name
 
     @staticmethod
     def on_error(status_code):
@@ -39,7 +49,7 @@ class DataStream(StreamListener):
 
     def start_stream(self):
         stream = Stream(self.auth, self)
-        stream.filter(track=['balacera'], async=True)
+        stream.filter(track=['balacera', 'Violencia', '@ReportajeReal'], async=False)
 
     @staticmethod
     def lowercase_tweets(tweet):
@@ -47,10 +57,14 @@ class DataStream(StreamListener):
 
     def analyze_tweet_for_keywords(self, tweet):
         if self.words_re.search(tweet):
-            print tweet
+            return True
+
+    def analyze_if_tweet_is_at_us(self, tweet):
+        if self.reportaje_re.search(tweet):
+            return True
 
     def get_home_timeline(self):
-        tweet = self.api.user_timeline(screen_name='ReportajeReal', count=1, include_rts=True)
+        tweet = self.api.user_timeline(id='709091333969870851', count=1, include_rts=True)
         tweet_id = self.get_id_from_tweet_status_object(tweet)
         if self.check_last_tweet():
             print 'Found new tweet.'
@@ -64,6 +78,7 @@ class DataStream(StreamListener):
         status = status[0]
         json_string = json.dumps(status._json)
         json_string = json.loads(json_string)
+        print json_string["user"]["id"]
         print json_string["text"]
         return json_string["id"]
 
@@ -86,4 +101,4 @@ class DataStream(StreamListener):
                     return True
 
 t = DataStream()
-t.get_home_timeline()
+t.start_stream()
