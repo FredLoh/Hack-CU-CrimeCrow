@@ -11,7 +11,7 @@ from views import basic_views
 
 # Basic regex routes
 routes = [("^Status", basic_views.ping),
-          ("^/e(cho)?\s(?P<echo_message>[^$]+)$", basic_views.echo)]
+          ("^/e(cho)?\s(?P<alerta>[^$]+)$", basic_views.echo)]
 
 
 class RouteLayer(YowInterfaceLayer):
