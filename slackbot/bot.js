@@ -13,44 +13,44 @@
   Botkit is has many features for building cool and useful bots!
   Read all about it here:
     -> http://howdy.ai/botkit
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 
-/* Uses the slack button feature to offer a real time bot to multiple teams */
-var fs = require("fs")
-var Botkit = require('botkit');
-var os = require('os');
+    /* Uses the slack button feature to offer a real time bot to multiple teams */
+    var fs = require("fs")
+    var Botkit = require('botkit');
+    var os = require('os');
 
-var config = JSON.parse(fs.readFileSync("config.json"))
-firebaseStorage = require('./firebase_storage.js')({firebase_uri: config.firebase_uri})
-firebaseReportRef = new Firebase(config.firebase_uri + '/reports')
+    var config = JSON.parse(fs.readFileSync("config.json"))
+    firebaseStorage = require('./firebase_storage.js')({firebase_uri: config.firebase_uri})
 
-if (!config.client_id || !config.client_secret || !config.port) {
-  console.log('Error: Specify clientId clientSecret and port in environment');
-  process.exit(1);
-}
 
-var controller = Botkit.slackbot({
-  debug: true,
-    storage: firebaseStorage,
-}).configureSlackApp(
-  {
-    clientId: config.client_id,
-    clientSecret: config.client_secret,
-    scopes: ['bot'],
-  }
-);
-
-controller.setupWebserver(config.port,function(err,webserver) {
-  controller.createWebhookEndpoints(controller.webserver);
-
-  controller.createOauthEndpoints(controller.webserver,function(err,req,res) {
-    if (err) {
-      res.status(500).send('ERROR: ' + err);
-    } else {
-      res.send('Success!');
+    if (!config.client_id || !config.client_secret || !config.port) {
+      console.log('Error: Specify clientId clientSecret and port in environment');
+      process.exit(1);
     }
-  });
-});
+
+    var controller = Botkit.slackbot({
+      debug: true,
+      storage: firebaseStorage,
+    }).configureSlackApp(
+    {
+      clientId: config.client_id,
+      clientSecret: config.client_secret,
+      scopes: ['bot'],
+    }
+    );
+
+    controller.setupWebserver(config.port,function(err,webserver) {
+      controller.createWebhookEndpoints(controller.webserver);
+
+      controller.createOauthEndpoints(controller.webserver,function(err,req,res) {
+        if (err) {
+          res.status(500).send('ERROR: ' + err);
+        } else {
+          res.send('Success!');
+        }
+      });
+    });
 
 
 // just a simple way to make sure we don't
@@ -162,21 +162,54 @@ controller.hears(['subscribe'], 'direct_message,direct_mention,mention', functio
   if(message.event == 'direct_message'){
     subscriber = {
       id: message.user,
-      type: 'direct_message',
+      type: 'user',
       message: message
     }
   }
   else{
     subscriber = {
       id: message.channel,
-      type: 'mention',
-      message: message
+      type: 'channel',
     }
   }
-  controller.storage.subscribers.save(subscriber, function(err, subscriber) {
+  controller.storage.subscribers.save(function(err, subscribers) {
     bot.reply(message, 'You have been subscribed to updates\nto unsubscribe type "unsubscribe"')
   });
 
+})
+
+controller.hears(['update'], 'direct_message,direct_mention,mention', function(bot, message) {
+  bot.startConversation(message,function(err,convo) {
+    setTimeout(function () {
+      controller.storage.reports.all(function(err, reports) {
+        message = ""
+        for(i = 0; i < reports.length; i++){
+          report = reports[i]
+          var location = ''
+          if(report.location != null){
+            location ='Location:' + report.location.name
+          }
+          message += report.title + '\n' + report.body + '\n' + location + '\n\n'
+        }
+        convo.say('Latest Reports:\n' + message)
+      });
+    }, 1000)
+    setTimeout(function () {
+      controller.storage.tweets.all(function(err, tweets) {
+        message = ""
+        for(i = 0; i < 5; i++){
+          tweet = tweets[i]
+          console.log(tweet)
+          var location = ''
+          if(tweet.location != null){
+            location ='Location:' + tweet.location.name
+          }
+          message += tweet.text + '\n' + location + '\n\n'
+        }
+        convo.say('Latest Tweets:\n' + message)
+      });
+    }, 1000)
+  })
 })
 
 function extractReport(id, text){
@@ -193,23 +226,6 @@ function extractReport(id, text){
     }
   }
 }
-
-firebaseReportRef.on('child_added', function(childSnapshot, prevChildKey) {
-  data = childSnapshot.val()
-  var location
-  if(data.location != null){
-    location ='Location:' + data.location.name
-  }
-  else{
-    location =  ''
-  }
-  message = data.title + '\n' + data.body + '\n' + location
-  controller.storage.subscribers.all(function(err, subscribers) {
-    if (subscribers.message)  
-      bot.reply(subscribers[0].message, message)
-  });
-});
-
 
 
 
