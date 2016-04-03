@@ -35,10 +35,11 @@ angular.module('myApp.view1', ['ngRoute', 'uiGmapgoogle-maps', "firebase", "ngTa
 		  
         var tempMarkers = [];
 	    var data = [];
-	    var username = "";
-	    var usernameTable = "anonymous";
 		
 		for (var key in $scope.data.tweets) {
+			
+			var username = "";
+		    var usernameTable = "";
 			
 			if ( 'username' in $scope.data.tweets[key] ) {
 				username = '<a href="https://twitter.com/' + $scope.data.tweets[key].username + '" target="_blank">@' + $scope.data.tweets[key].username + '</a>';
@@ -48,10 +49,12 @@ angular.module('myApp.view1', ['ngRoute', 'uiGmapgoogle-maps', "firebase", "ngTa
 			/* No Location, Add To Table */
 			if ( !('location' in $scope.data.tweets[key]) ) {
 				var tableObj = {
-						title: $scope.data.tweets[key].title,
-						text: $scope.data.tweets[key].text
+						text: $scope.data.tweets[key].text,
+						link: usernameTable
 				};
-				data.push(tableObj);
+				if (usernameTable !== "") {
+					data.push(tableObj);
+				}
 				continue;
 			} else {
 				var location = $scope.data.tweets[key].location;
@@ -63,12 +66,14 @@ angular.module('myApp.view1', ['ngRoute', 'uiGmapgoogle-maps', "firebase", "ngTa
 				        user: username
 				};
 				var tableObj = {
-						user: usernameTable,
-						text: $scope.data.tweets[key].text
+						text: $scope.data.tweets[key].text,
+						link: usernameTable
 				};
 				markerObj["id"] = key;
 			    tempMarkers.push(markerObj);
-			    data.push(tableObj);
+			    if (usernameTable !== "") {
+					data.push(tableObj);
+				}
 				
 			}
 			
@@ -91,8 +96,8 @@ angular.module('myApp.view1', ['ngRoute', 'uiGmapgoogle-maps', "firebase", "ngTa
 						        user: ""
 						};
 						var tableObj = {
-								user: "anonymous",
-								text: $scope.data.reports[key].body
+								text: $scope.data.reports[key].body,
+								link: ""
 						};
 						markerObj["id"] = key;
 					    tempMarkers.push(markerObj);
@@ -107,10 +112,10 @@ angular.module('myApp.view1', ['ngRoute', 'uiGmapgoogle-maps', "firebase", "ngTa
 		
 		/* Add Data to the Dom */
 		$scope.map.markers = tempMarkers;
-
+		
 	    $scope.tableParams = new NgTableParams({
 	        page: 1,            // show first page
-	        count: 10           // count per page
+	        count: 10			// count per page
 	    }, {
 	        data: data
 	    });

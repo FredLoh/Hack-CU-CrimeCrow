@@ -27,10 +27,10 @@
     <div style="padding: 0% 1% 0% 1%">
       <table ng-table="tableParams" class="table table-bordered ng-table-responsive">
           <tr ng-repeat="post in $data">
-              <td align="center" data-title="'User'">
-                  {{post.user}}
+              <td align="center" data-title="'Link'" sortable="'link'">
+                  <a ng-href="https://twitter.com/{{post.link}}" target="_blank">{{post.link}}</a>
               </td>
-              <td align="center" data-title="'Text'">
+              <td align="center" data-title="'Text'" sortable="'text'">
                   {{post.text}}
               </td>
           </tr>
