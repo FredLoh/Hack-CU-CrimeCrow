@@ -20,17 +20,17 @@ coverage
 
 # Grunt intermediate storage (http://gruntjs.com/creating-plugins#storing-task-files)
 .grunt
-
+backup.json
 # node-waf configuration
 .lock-wscript
-
+vmx-export (1).json
 # Compiled binary addons (http://nodejs.org/api/addons.html)
 build/Release
-
+Balaceras.txt
 # Dependency directories
 node_modules
 jspm_packages
-
+vmx-export.json
 # Optional npm cache directory
 .npm
 last_id.txt
