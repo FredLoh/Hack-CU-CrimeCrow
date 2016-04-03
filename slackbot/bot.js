@@ -189,7 +189,7 @@ controller.hears(['update'], 'direct_message,direct_mention,mention', function(b
           if(report.location != null){
             location ='Location:' + report.location.name
           }
-          message += report.title + '\n' + report.body + '\n' + location + '\n\n'
+          message += report.text + '\n' + location + '\n\n'
         }
         convo.say('Latest Reports:\n' + message)
       });
@@ -199,7 +199,6 @@ controller.hears(['update'], 'direct_message,direct_mention,mention', function(b
         message = ""
         for(i = 0; i < 5; i++){
           tweet = tweets[i]
-          console.log(tweet)
           var location = ''
           if(tweet.location != null){
             location ='Location:' + tweet.location.name
@@ -220,7 +219,7 @@ function extractReport(id, text){
   return {
     id: id,
     title: extractedTitle,
-    body: extractedBody,
+    text: extractedBody,
     location: {
       name: extractedLocation
     }

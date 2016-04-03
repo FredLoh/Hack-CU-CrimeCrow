@@ -23,7 +23,7 @@ class DataStream(StreamListener):
         self.list_of_words = ['en', 'entre', 'calle', 'interior',
                               'carretera', 'rumbo', 'evite']
         self.words_re = re.compile("|".join(self.list_of_words))
-        self.reportaje_re = re.compile("|".join(['@reportajereal']))
+        self.reportaje_re = re.compile("|".join(['@CrimeCrow']))
         self.last_id = '1'
         self.firebase = FirebaseInteraction()
         self.tweet_analyzer = TweetReportAnalyzer()
@@ -97,7 +97,7 @@ class DataStream(StreamListener):
 
     def start_stream(self):
         stream = Stream(self.auth, self)
-        stream.filter(track=['balacera', '@ReportajeReal'], async=False)
+        stream.filter(track=['balacera', '@CrimeCrow'], async=False)
 
     @staticmethod
     def lowercase_tweets(tweet):
