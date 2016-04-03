@@ -37,6 +37,8 @@ class DataStream(StreamListener):
     def on_status(self, status):
         status.text = status.text.encode('utf8')
         status.text = self.remove_emoji(status.text)
+        status.text = self.replace_hashtag_with_word(status.text)
+        status.text = self.replace_hashtag_with_word(status.text)
         username = self.get_user_from_status(status.id)
         # status.text = self.lowercase_tweets(status.text)
         if self.analyze_if_tweet_is_at_us(status.text):
@@ -145,6 +147,12 @@ class DataStream(StreamListener):
         # UCS-2
             emoji_pattern = re.compile(u'([\u2600-\u27BF])|([\uD83C][\uDF00-\uDFFF])|([\uD83D][\uDC00-\uDE4F])|([\uD83D][\uDE80-\uDEFF])')
         return emoji_pattern.sub('', tweet)
+
+    def replace_hashtag_with_word(selt, tweet):
+        return re.sub(r'#([^\s]+)', r'\1', tweet)
+
+    def replace_at_with_word(self, tweet):
+        return re.sub(r'@[^\s]+', 'USER', tweet)
 
 
     @staticmethod
