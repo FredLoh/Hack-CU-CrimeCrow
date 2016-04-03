@@ -187,7 +187,7 @@ controller.hears(['update'], 'direct_message,direct_mention,mention', function(b
           report = reports[i]
           var location = ''
           if(report.location != null){
-            location ='Location:' + report.location.name
+            location ='Location:' + report.location.title
           }
           message += report.text + '\n' + location + '\n\n'
         }
@@ -201,7 +201,7 @@ controller.hears(['update'], 'direct_message,direct_mention,mention', function(b
           tweet = tweets[i]
           var location = ''
           if(tweet.location != null){
-            location ='Location:' + tweet.location.name
+            location ='Location:' + tweet.location.title
           }
           message += tweet.text + '\n' + location + '\n\n'
         }
@@ -221,7 +221,7 @@ function extractReport(id, text){
     title: extractedTitle,
     text: extractedBody,
     location: {
-      name: extractedLocation
+      title: extractedLocation
     }
   }
 }
