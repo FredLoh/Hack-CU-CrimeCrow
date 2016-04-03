@@ -28,26 +28,64 @@ class DataStream(StreamListener):
         self.firebase = FirebaseInteraction()
         self.tweet_analyzer = TweetReportAnalyzer()
 
+    def get_user_from_status(self, id):
+        status = self.api.get_status(id)
+        json_string = json.dumps(status._json)
+        json_string = json.loads(json_string)
+        return json_string['user']['screen_name']
+
     def on_status(self, status):
-        status.text = self.lowercase_tweets(status.text)
+        status.text = status.text.encode('utf8')
+        status.text = self.remove_emoji(status.text)
+        status.text = self.replace_hashtag_with_word(status.text)
+        status.text = self.replace_hashtag_with_word(status.text)
+        username = self.get_user_from_status(status.id)
+        # status.text = self.lowercase_tweets(status.text)
         if self.analyze_if_tweet_is_at_us(status.text):
             # DO STUFF WITH TWEET AT US
             print 'Tweet at us.'
             print status.text
             if self.tweet_analyzer.analyze_tweet_for_keywords(tweet=status.text):
-                self.firebase.post_new_report(tweet_id=status.id, tweet=status.text, title='wut')
-                try:
-                    self.tweet(status.text)
-                except TweepError:
-                    print 'Duplicate'
+                # FIND KEY WORDS
+                word_string = str(status.text)
+                location_result = self.tweet_analyzer.get_location(tweet=word_string)
+                if location_result:
+                    self.firebase.post_new_report(username=username, tweet_id=status.id, title='', tweet=status.text,
+                                                  location_title=word_string, lat=location_result['lat'],
+                                                  lon=location_result['lng'])
+                    try:
+                        self.tweet(status.text)
+                    except TweepError:
+                        print 'Duplicate'
+                else:
+                    print status.text
+                    self.firebase.post_new_report(username=username, tweet_id=status.id, title='', tweet=status.text,
+                                                  location_title='', lat='', lon='')
+                    try:
+                        self.tweet(status.text)
+                    except TweepError:
+                        print 'Duplicate'
+
         else:
+            print 'Tweet not at us.'
+            print status.text
             if self.analyze_tweet_for_keywords(status.text):
-                print status.text
-                self.firebase.post_new_tweet(tweet_id=status.id, tweet=status.text, title='wut')
-                if status.coordinates:
-                    print 'coords:', status.coordinates
-                if status.place:
-                    print 'place:', status.place.full_name
+                # FIND KEY WORDS
+                word_string = str(status.text)
+                location_result = self.tweet_analyzer.get_location(word_string)
+                if location_result:
+                    print status.text
+                    self.firebase.post_new_tweet(username=username, tweet_id=status.id, title='', tweet=status.text,
+                                                 location_title=word_string, lat=location_result['lat'],
+                                                 lon=location_result['lng'])
+                    if status.coordinates:
+                        print 'coords:', status.coordinates
+                    if status.place:
+                        print 'place:', status.place.full_name
+                else:
+                    print status.text
+                    self.firebase.post_new_tweet(username=username, tweet_id=status.id, title='', tweet=status.text,
+                                                 location_title='', lat='', lon='')
 
     @staticmethod
     def on_error(status_code):
@@ -100,6 +138,22 @@ class DataStream(StreamListener):
     def sleep_for(seconds):
         print 'Sleeping'
         time.sleep(seconds)
+
+    def remove_emoji(self, tweet):
+        try:
+        # UCS-4
+            emoji_pattern = re.compile(u'([\U00002600-\U000027BF])|([\U0001f300-\U0001f64F])|([\U0001f680-\U0001f6FF])')
+        except re.error:
+        # UCS-2
+            emoji_pattern = re.compile(u'([\u2600-\u27BF])|([\uD83C][\uDF00-\uDFFF])|([\uD83D][\uDC00-\uDE4F])|([\uD83D][\uDE80-\uDEFF])')
+        return emoji_pattern.sub('', tweet)
+
+    def replace_hashtag_with_word(selt, tweet):
+        return re.sub(r'#([^\s]+)', r'\1', tweet)
+
+    def replace_at_with_word(self, tweet):
+        return re.sub(r'@[^\s]+', 'USER', tweet)
+
 
     @staticmethod
     def store_last_tweet_id(tweet_id):
