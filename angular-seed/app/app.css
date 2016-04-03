@@ -1,0 +1,136 @@
+/* app css stylesheet */
+
+.menu {
+  list-style: none;
+  border-bottom: 0.1em solid black;
+  margin-bottom: 2em;
+  padding: 0 0 0.5em;
+}
+
+.menu:before {
+  content: "[";
+}
+
+.menu:after {
+  content: "]";
+}
+
+.menu > li {
+  display: inline;
+}
+
+.menu > li:before {
+  content: "|";
+  padding-right: 0.3em;
+}
+
+.menu > li:nth-child(1):before {
+  content: "";
+  padding: 0;
+}
+
+.navbar-default {
+    background-color: #0000B3;
+    background-image: linear-gradient(120deg, #0000B3, #3366CC);
+    border-color: #000066;
+}
+
+.navbar-default .navbar-brand {
+	color: #FFF;
+}
+
+.navbar-default .navbar-brand:hover,
+.navbar-default .navbar-brand:focus {
+    color: #CCCCCC;
+}
+
+.navbar-default .navbar-nav > li > a:hover,
+.navbar-default .navbar-nav > li > a:focus {
+    color: #CCCCCC;
+}
+
+.navbar-default .navbar-nav > li > a {
+    color: #FFF;
+}
+
+.navbar-default .navbar-nav > .active > a, 
+.navbar-default .navbar-nav > .active > a:hover, 
+.navbar-default .navbar-nav > .active > a:focus {
+    color: #FFF;
+    background-color: #003CB3;
+}
+
+.map-title {
+	margin: 0 auto;
+    width: 17%;
+    font-family: Impact, Haettenschweiler, 'Franklin Gothic Bold', Charcoal, 'Helvetica Inserat', 'Bitstream Vera Sans Bold', 'Arial Black', 'sans serif';
+	font-size: 35px;
+	font-style: normal;
+	font-variant: normal;
+	font-weight: 500;
+	line-height: 26.4px;
+}
+
+.angular-google-map-container {
+    height: 500px;
+    width: 75%;
+    position: absolute;
+}
+
+.middle {
+    display: table;
+    height: 500px;
+    width: 75%;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/*
+Use bootstraps container w/ some overrides, nice thing about this on bootstrap is there is
+psuedo element with clearfix and display: table; , all after (which is why I know .middle works above)
+*/
+.container{
+    width: 50%;
+    padding-left: 0;
+    padding-right: 0;
+}
+
+.map-footer {
+	padding: 0% 0% 1.5% 1%;
+}
+
+.labelClass {
+    padding-top:29px;
+    padding-left:2px;
+    color:#000; 
+    font-family: 'open_sansregular';
+    height:61px; 
+    width:37px;
+    font-size:9px;
+    line-height: 12px;
+} 
+
+.table-container {
+	padding: 0% 5% 0% 5%;
+}
+
+.team-card {
+	width: 300px;
+	margin-left: auto;
+	margin-right: auto;
+	display: inline-block;
+}
+
+.card-image {
+	height: 300px;
+	width: 300px
+}
+      
+.profile-name {
+    font-family: Impact, Haettenschweiler, 'Franklin Gothic Bold', Charcoal, 'Helvetica Inserat', 'Bitstream Vera Sans Bold', 'Arial Black', 'sans serif';
+	font-size: 20px;
+	font-style: normal;
+	font-variant: normal;
+	font-weight: 500;
+	line-height: 26.4px;
+}  

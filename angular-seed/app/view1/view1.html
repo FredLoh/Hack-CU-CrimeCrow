@@ -1,0 +1,40 @@
+<div class="page-header" ng-controller="View1Ctrl">
+  <h1 class="map-title">Violence Map</h1>
+  <br>
+  <div class="middle">
+    <ui-gmap-google-map id="map" center='map.center' zoom='map.zoom'>
+      <ui-gmap-window 
+        show="map.window.show" 
+        coords="map.window.model" 
+        options="map.window.options" 
+        closeClick="map.window.closeClick()"
+        templateParameter="map.window">
+        <div style="width: 200px">
+          <div class="username"></div>
+          <div class="tweetBody"></div>
+        </div>
+      </ui-gmap-window>
+    
+      <ui-gmap-markers  
+        models="map.markers" 
+        coords="'self'"  
+        events="map.markersEvents"
+        options="'options'">
+      </ui-gmap-markers>
+    </ui-gmap-google-map>
+  </div>
+  <br>
+    <div style="padding: 0% 1% 0% 1%">
+      <table ng-table="tableParams" class="table table-bordered ng-table-responsive">
+          <tr ng-repeat="post in $data">
+              <td align="center" data-title="'User'">
+                  {{post.user}}
+              </td>
+              <td align="center" data-title="'Text'">
+                  {{post.text}}
+              </td>
+          </tr>
+      </table>
+    </div>
+  <br>
+</div>
