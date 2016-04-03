@@ -8,7 +8,7 @@ angular.module('myApp.view1', ['ngRoute', 'uiGmapgoogle-maps', "firebase", "ngTa
     controller: 'View1Ctrl'
   });
   uiGmapGoogleMapApiProvider.configure({
-      key: 'AIzaSyBfW-Eo17QNB5bs-ltAO47sn5NaSGG8dC0',
+      key: 'AIzaSyC5rDcP9mqkgcd4L_q3cvvXNdtvOGFy-6c',
       v: '3.20', //defaults to latest 3.X anyhow
       libraries: 'weather,geometry,visualization'
   });
@@ -19,6 +19,9 @@ angular.module('myApp.view1', ['ngRoute', 'uiGmapgoogle-maps', "firebase", "ngTa
 	
 	var ref = new Firebase("https://vmx.firebaseio.com");
 	$scope.data = $firebaseObject( ref );
+	
+	var tempMarkers = [];
+    var data = [];
 	
 	$scope.data.$loaded()
 	  .then(function() {
@@ -32,9 +35,6 @@ angular.module('myApp.view1', ['ngRoute', 'uiGmapgoogle-maps', "firebase", "ngTa
 			data.push(tempObj);
 		}
 		*/
-		  
-        var tempMarkers = [];
-	    var data = [];
 		
 		for (var key in $scope.data.tweets) {
 			
@@ -81,32 +81,21 @@ angular.module('myApp.view1', ['ngRoute', 'uiGmapgoogle-maps', "firebase", "ngTa
 		
 		/* Get Location Using the Google Maps API */
 		for (var key in $scope.data.reports) {
-			var location = $scope.data.reports[key].location.name.replace(/ /g, '+');
-			var json = GoogleMapsGeoTag.getGeotag(location);
-			json.then(
-				function(payload) {
-					var latlong = payload.data.results[0].geometry.location;
-					
-					if (latlong) {
-						var markerObj = {
-								latitude: latlong.lat,
-						        longitude: latlong.lng,
-						        title: 'marker-' + key,
-						        data: $scope.data.reports[key].body,
-						        user: ""
-						};
-						var tableObj = {
-								text: $scope.data.reports[key].body,
-								link: ""
-						};
-						markerObj["id"] = key;
-					    tempMarkers.push(markerObj);
-					    data.push(tableObj);
-					}
-				},
-				function(errorPayload) {
-					console.log("error");
-			});
+			var location = $scope.data.reports[key].location;
+			var markerObj = {
+					latitude: location.lat,
+			        longitude: location.lon,
+			        title: 'marker-' + key,
+			        data: $scope.data.reports[key].text,
+			        user: ""
+			};
+			var tableObj = {
+					text: $scope.data.reports[key].text,
+					link: ""
+			};
+			markerObj["id"] = key;
+		    tempMarkers.push(markerObj);
+			data.push(tableObj);
 		}
 		
 		
@@ -160,7 +149,7 @@ angular.module('myApp.view1', ['ngRoute', 'uiGmapgoogle-maps', "firebase", "ngTa
 .factory('GoogleMapsGeoTag', function($http) {
     return {
       getGeotag: function(id, apiKey) {
-         return $http.get('https://maps.googleapis.com/maps/api/geocode/json?address=' + id + '&key=AIzaSyBfW-Eo17QNB5bs-ltAO47sn5NaSGG8dC0');
+         return $http.get('https://maps.googleapis.com/maps/api/geocode/json?address=' + id + '&key=AIzaSyC5rDcP9mqkgcd4L_q3cvvXNdtvOGFy-6c');
       }
     }
 });
