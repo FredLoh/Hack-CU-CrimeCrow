@@ -17,6 +17,7 @@ var Firebase = require('firebase');
     usersRef = rootRef.child('slack/users')
     channelsRef = rootRef.child('slack/channels')
     reportsRef = rootRef.child('reports')
+    tweetsRef = rootRef.child('tweets')
     subscribersRef = rootRef.child('slack/subscribers')
 
     return {
@@ -43,6 +44,12 @@ var Firebase = require('firebase');
             save: save(reportsRef),
             all: all(reportsRef),
             remove: remove(reportsRef)
+        },
+        tweets: {
+            get: get(tweetsRef),
+            save: save(tweetsRef),
+            all: all(tweetsRef),
+            remove: remove(tweetsRef)        
         },
         subscribers:{
             get: get(subscribersRef),
